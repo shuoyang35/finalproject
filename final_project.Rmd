@@ -1,0 +1,16 @@
+---
+title: "final"
+output: html_document
+date: "2023-12-01"
+---
+
+```{r}
+library(tidyverse)
+df <- read_delim("../../../../seanchou/Downloads/NCdata-tables-age-specific-numbers-countries-can(160)-incidence-bothsexes-y(2021).csv")
+df
+```
+```{r}
+df2 <- read_delim("../../../Downloads/data.csv")
+df2
+```
+
