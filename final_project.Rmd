@@ -12,10 +12,10 @@ library(readr)
 library(ggplot2)
 library(dplyr)
 
-internet_df <- read_csv("../Data_final/non_net_users_prc.csv")
+internet_df <- read_csv("./non_net_users_prc.csv")
 head(internet_df)
 
-employment_df <- read_csv("../Data_final/aged_15plus_employment_rate_percent.csv")
+employment_df <- read_csv("./aged_15plus_employment_rate_percent.csv")
 head(employment_df)
 ```
 
