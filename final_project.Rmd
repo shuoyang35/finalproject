@@ -1,17 +1,157 @@
 ---
-title: "final"
+title: "Final project"
+author: "Sean, Alex, Lynnie"
+date: "2023-12-04"
 output: html_document
-date: "2023-12-01"
 ---
-
-
-```{r}
+## Data
+### Load data
+```{r, message=FALSE}
 library(tidyverse)
-df <- read_delim("./NCdata-tables-age-specific-numbers-countries-can(160)-incidence-bothsexes-y(2021).csv")
-df
+library(readr)
+library(ggplot2)
+library(dplyr)
+
+internet_df <- read_csv("../Data_final/non_net_users_prc.csv")
+head(internet_df)
+
+employment_df <- read_csv("../Data_final/aged_15plus_employment_rate_percent.csv")
+head(employment_df)
 ```
+
+### Trim both datasets so time matches 1991 1o 2019
 ```{r}
-df2 <- read_delim("./data.csv")
-df2
+internet_df <- internet_df %>% 
+  select(country, '1991':'2019')
+head(internet_df)
+
+employment_df <- employment_df %>% 
+  select(country, '1991':'2019')
+head(employment_df)
 ```
+
+### Data Cleaning
+```{r}
+internet_df[is.na(internet_df)] <- NA
+head(internet_df)
+
+employment_df[is.na(employment_df)] <- NA
+head(employment_df)
+```
+
+### Filter countries for both datasets
+```{r}
+internet_df$country <- tolower(internet_df$country)
+employment_df$country <- tolower(employment_df$country)
+
+common_countries <- intersect(internet_df$country, employment_df$country)
+
+internet_filtered <- internet_df %>% filter(country %in% common_countries)
+dim(internet_filtered)
+employment_filtered <- employment_df %>% filter(country %in% common_countries)
+dim(employment_filtered)
+```
+
+### Merge data
+```{r}
+combined_df <- merge(internet_filtered, employment_filtered, by = "country")
+combined_df
+```
+
+
+## Visulaizations
+### Line Graph
+#### Reshape data
+```{r, message=FALSE}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+# Reshape the data to long format
+combined_long <- combined_df %>%
+    pivot_longer(cols = -country, names_to = "year_indicator", values_to = "value") %>%
+    separate(year_indicator, into = c("year", "indicator"), sep = "\\.")
+
+# Convert year to numeric
+combined_long$year <- as.numeric(combined_long$year)
+```
+
+#### Filter Countries
+```{r}
+# Define the lists of countries
+first_world_countries <- tolower(c("Australia", "Canada", "France", "Germany", "Italy", 
+                           "Japan", "New Zealand", "Norway", "UK", "USA"))
+third_world_countries <- tolower(c("Afghanistan", "Angola", "Argentina", "Bangladesh", "Bolivia", 
+                           "Burkina Faso", "Cambodia", "Chad", "Congo", "Dominican Republic"))
+
+# Filter the data
+first_world_data <- combined_long %>% 
+  filter(country %in% first_world_countries)
+first_world_data
+third_world_data <- combined_long %>% 
+  filter(country %in% third_world_countries)
+third_world_data
+```
+
+#### Line Graph for First World Countries
+```{r}
+first_world_data %>% 
+  ggplot(aes(x = year, y = value, color = country, group = interaction(country, indicator))) +
+    geom_line() +
+    facet_wrap(~indicator, scales = "free_y") +
+    labs(title = "Non-Internet Usage vs Employment Rate in First World Countries", 
+         x = "Year", 
+         y = "Value") +
+    theme_minimal()
+```
+
+#### Line Graph for Third World Countries
+```{r}
+third_world_data %>% 
+  ggplot(aes(x = year, y = value, color = country, group = interaction(country, indicator))) +
+    geom_line() +
+    facet_wrap(~indicator, scales = "free_y") +
+    labs(title = "Non-Internet Usage vs Employment Rate in Third World Countries", 
+         x = "Year", 
+         y = "Value") +
+    theme_minimal()
+```
+
+
+### Scatterplot
+#### Reshape data
+```{r, message=FALSE}
+library(tidyr)
+library(dplyr)
+library(ggplot2)
+
+combined_long2 <- combined_df %>%
+    pivot_longer(cols = matches("\\.x$"), names_to = "year_x", values_to = "internet_rate") %>%
+    pivot_longer(cols = matches("\\.y$"), names_to = "year_y", values_to = "employment_rate") %>%
+    filter(substring(year_x, 1, 4) == substring(year_y, 1, 4)) %>%
+    mutate(year = as.numeric(substring(year_x, 1, 4))) %>%
+    select(-c(year_x, year_y))
+
+combined_long2
+```
+
+#### Scatterplot
+```{r}
+combined_long2 %>% 
+  ggplot(aes(x = internet_rate, y = employment_rate, color = country, alpha = 0.1)) +
+    geom_point() +
+    labs(title = "Scatter Plot of Non-Internet Usage vs Employment Rate",
+         x = "Internet Non-Usage Rate (%)",
+         y = "Employment Rate (%)") +
+    theme_minimal() +
+  theme(legend.position = "none")
+```
+
+
+
+
+
+
+
+
 
