@@ -1,26 +1,26 @@
 ---
-title: "Final project"
+title: "Final project without code chunks"
 author: "Sean, Alex, Lynnie"
-date: "2023-12-04"
+date: "2023-12-07"
 output: html_document
 ---
 ## Data
 ### Load data
-```{r, message=FALSE}
+```{r, message=FALSE, echo=FALSE}
 library(tidyverse)
 library(readr)
 library(ggplot2)
 library(dplyr)
 
-internet_df <- read_csv("./non_net_users_prc.csv")
+internet_df <- read_csv("../Data_final/non_net_users_prc.csv")
 head(internet_df)
 
-employment_df <- read_csv("./aged_15plus_employment_rate_percent.csv")
+employment_df <- read_csv("../Data_final/aged_15plus_employment_rate_percent.csv")
 head(employment_df)
 ```
 
 ### Trim both datasets so time matches 1991 to 2019
-```{r}
+```{r, echo=FALSE}
 internet_df <- internet_df %>% 
   select(country, '1991':'2019')
 head(internet_df)
@@ -31,7 +31,7 @@ head(employment_df)
 ```
 
 ### Data Cleaning
-```{r}
+```{r, echo=FALSE}
 internet_df[is.na(internet_df)] <- NA
 head(internet_df)
 
@@ -40,7 +40,7 @@ head(employment_df)
 ```
 
 ### Filter countries for both datasets
-```{r}
+```{r, echo=FALSE}
 internet_df$country <- tolower(internet_df$country)
 employment_df$country <- tolower(employment_df$country)
 
@@ -53,7 +53,7 @@ dim(employment_filtered)
 ```
 
 ### Merge data
-```{r}
+```{r, echo=FALSE}
 combined_df <- merge(internet_filtered, employment_filtered, by = "country")
 head(combined_df)
 ```
@@ -62,7 +62,7 @@ head(combined_df)
 ## Visulaizations
 ### Line Graph
 #### Reshape data
-```{r, message=FALSE}
+```{r, message=FALSE, echo=FALSE}
 library(tidyr)
 library(dplyr)
 library(ggplot2)
@@ -75,7 +75,7 @@ combined_long$year <- as.numeric(combined_long$year)
 ```
 
 #### Filter Countries
-```{r}
+```{r, echo=FALSE}
 first_world_countries <- tolower(c("Australia", "Canada", "France", "Germany", "Italy", 
                            "Japan", "New Zealand", "Norway", "UK", "USA"))
 third_world_countries <- tolower(c("Afghanistan", "Angola", "Argentina", "Bangladesh", "Bolivia", 
@@ -90,7 +90,7 @@ third_world_data
 ```
 
 #### Line Graph for First World Countries
-```{r}
+```{r, echo=FALSE}
 first_world_data %>% 
   ggplot(aes(x = year, y = value, color = country, group = interaction(country, indicator))) +
     geom_line() +
@@ -102,7 +102,7 @@ first_world_data %>%
 ```
 
 #### Line Graph for Third World Countries
-```{r}
+```{r, echo=FALSE}
 third_world_data %>% 
   ggplot(aes(x = year, y = value, color = country, group = interaction(country, indicator))) +
     geom_line() +
@@ -116,7 +116,7 @@ third_world_data %>%
 
 ### Scatterplot
 #### Reshape data
-```{r, message=FALSE}
+```{r, message=FALSE, echo=FALSE}
 library(tidyr)
 library(dplyr)
 library(ggplot2)
@@ -132,7 +132,7 @@ combined_long2
 ```
 
 #### Scatterplot
-```{r}
+```{r, echo=FALSE}
 combined_long2 %>% 
   ggplot(aes(x = internet_rate, y = employment_rate, color = country, alpha = 0.1)) +
     geom_point() +
