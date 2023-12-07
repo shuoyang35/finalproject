@@ -19,7 +19,7 @@ employment_df <- read_csv("./aged_15plus_employment_rate_percent.csv")
 head(employment_df)
 ```
 
-### Trim both datasets so time matches 1991 1o 2019
+### Trim both datasets so time matches 1991 to 2019
 ```{r}
 internet_df <- internet_df %>% 
   select(country, '1991':'2019')
@@ -55,7 +55,7 @@ dim(employment_filtered)
 ### Merge data
 ```{r}
 combined_df <- merge(internet_filtered, employment_filtered, by = "country")
-combined_df
+head(combined_df)
 ```
 
 
